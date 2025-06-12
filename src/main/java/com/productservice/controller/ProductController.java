@@ -3,6 +3,7 @@ package com.productservice.controller;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.productservice.client.exceptions.ProductNotFoundException;
+import com.productservice.dto.CategoryDTO;
 import com.productservice.dto.ProductDto;
 import com.productservice.service.ProductService;
 
@@ -52,6 +54,15 @@ public class ProductController {
 		return new ResponseEntity<ProductDto>(productService.deleteProductById(id),HttpStatus.ACCEPTED);
 	}
 	
+	@GetMapping("/categories")
+	public ResponseEntity<List<CategoryDTO>> getAllCategories(){
+		return new ResponseEntity<List<CategoryDTO>>(productService.getAllCategories(),HttpStatus.OK);
+		
+	}
 	
+	@GetMapping("/categories/{category}")
+	public ResponseEntity<List<ProductDto>> getProductsByCategory(@PathVariable String category){
+		return new ResponseEntity<List<ProductDto>>(productService.getProductsByCategory(category), HttpStatus.OK);
+	}
 
 }

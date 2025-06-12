@@ -8,7 +8,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
 import com.productservice.client.exceptions.ProductNotFoundException;
-import com.productservice.client.model.FakeStoreProduct;
+import com.productservice.client.model.Category;
+import com.productservice.client.model.Product;
 import com.productservice.dto.ProductDto;
 
 @Component
@@ -18,24 +19,27 @@ public class ProductsClient {
 
     private final String genericProductUrl;
     
+    private final String categoryUrl;
+    
     private RestClient restClient;
 
     @Autowired
     public ProductsClient(RestClient.Builder builder, @Value("${fakestore.api.url}") String fakeStoreUrl,
-            @Value("${fakestore.api.paths.products}") String pathForProducts) {
+            @Value("${fakestore.api.paths.products}") String pathForProducts , @Value("${fakestore.api.paths.categories}") String pathForCategories) {
         this.specificProductUrl = fakeStoreUrl + pathForProducts +"/{id}";
 		this.genericProductUrl = fakeStoreUrl + pathForProducts;
 		this.restClient= builder.build();
+		this.categoryUrl = fakeStoreUrl+pathForCategories;
     }
     
-    public FakeStoreProduct getProductById(Long id) throws ProductNotFoundException {
+    public Product getProductById(Long id) throws ProductNotFoundException {
         //Integrate the FakeStore API.
         //RestTemplate
 
-    	FakeStoreProduct product= restClient.get()
+    	Product product= restClient.get()
                 .uri(specificProductUrl,id)
                 .retrieve()
-                .body(FakeStoreProduct.class);
+                .body(Product.class);
 
         if (product == null) {
             //Throw an exception.
@@ -47,36 +51,42 @@ public class ProductsClient {
         return product;
     }
 
-    public List<FakeStoreProduct> getProducts() {
+    public List<Product> getProducts() {
     	return List.of(restClient.get()
                 .uri(genericProductUrl)
                 .retrieve()
-                .body(FakeStoreProduct[].class));
+                .body(Product[].class));
              
 
     }
 
-   public FakeStoreProduct deleteProductById(Long id) throws ProductNotFoundException {
-	   FakeStoreProduct product= restClient.delete()
+   public Product deleteProductById(Long id) throws ProductNotFoundException {
+	   return restClient.delete()
                .uri(specificProductUrl,id).
-               retrieve().body(FakeStoreProduct.class);
-
-	    return product;
+               retrieve().body(Product.class);
 	   
    }
    
 	   
-	   public FakeStoreProduct createProduct(ProductDto productDto) {
+	   public Product createProduct(ProductDto productDto) {
 		   
-	        FakeStoreProduct createdProduct= restClient.post().uri(genericProductUrl).body(productDto).retrieve().body(FakeStoreProduct.class);
+	        Product createdProduct= restClient.post().uri(genericProductUrl).body(productDto).retrieve().body(Product.class);
 	        return createdProduct;
 	    }
 	   
-	   public FakeStoreProduct updateProductById(Long id,ProductDto productDto) {
+	   public Product updateProductById(Long id,ProductDto productDto) {
      
-		   FakeStoreProduct updatedProduct= restClient.put().uri(specificProductUrl+ id).body(productDto).retrieve().body(FakeStoreProduct.class);
+		   Product updatedProduct= restClient.put().uri(specificProductUrl+ id).body(productDto).retrieve().body(Product.class);
 	        return updatedProduct;
 
+	   }
+	   
+	   public List<Product> getProductsByCategory(String category){
+		   return List.of(restClient.get().uri(categoryUrl+category).retrieve().body(Product[].class));
 		   
+	   }
+	   
+	   public List<Category> getCategories(){
+		   return List.of(restClient.get().uri(categoryUrl).retrieve().body(com.productservice.client.model.Category[].class));
 	   }
    }

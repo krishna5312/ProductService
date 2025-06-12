@@ -1,6 +1,7 @@
 package com.productservice.dto;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 import lombok.NoArgsConstructor;
 
@@ -8,7 +9,7 @@ import lombok.NoArgsConstructor;
 public class ProductDto implements Serializable{
 
 	private static final long serialVersionUID = -3475150186721797253L;
-	private Long id;
+	private UUID id;
     private String title;
     private int price;
     private String category;
@@ -22,11 +23,11 @@ public class ProductDto implements Serializable{
 	public void setRating(double rating) {
 		this.rating = rating;
 	}
-	public Long getId() {
+	public UUID getId() {
 		return id;
 	}
-	public void setId(Long id) {
-		this.id = id;
+	public void setId(UUID uuid) {
+		this.id = uuid;
 	}
 	public String getTitle() {
 		return title;
